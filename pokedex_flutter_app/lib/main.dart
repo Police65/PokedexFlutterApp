@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,6 +11,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pokedex Gen 7',
       home: PokedexPage(),
+      routes: {
+        '/info': (context) => PokemonInfoPage(),
+      },
     );
   }
 }
@@ -75,9 +79,21 @@ class _PokedexPageState extends State<PokedexPage> {
               ListView.builder(
                 itemCount: pokemonList.length,
                 itemBuilder: (context, index) {
-                  return PokemonCard(
-                      name: pokemonList[index]['name'],
-                      number: (index + 722).toString());
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/info',
+                        arguments: PokemonInfoArguments(
+                          pokemonName: pokemonList[index]['name'],
+                          pokemonNumber: (index + 722).toString(),
+                        ),
+                      );
+                    },
+                    child: PokemonCard(
+                        name: pokemonList[index]['name'],
+                        number: (index + 722).toString()),
+                  );
                 },
               ),
               Positioned(
@@ -156,6 +172,93 @@ class PokemonCard extends StatelessWidget {
   }
 }
 
+class PokemonInfoArguments {
+  final String pokemonName;
+  final String pokemonNumber;
+
+  PokemonInfoArguments(
+      {required this.pokemonName, required this.pokemonNumber});
+}
+
+//Aun no se ve como quiero asi que, aunque no tenga nota luego probablemente modifique la clase PokemonInfoPage
+
+class PokemonInfoPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final PokemonInfoArguments args =
+        ModalRoute.of(context)!.settings.arguments as PokemonInfoArguments;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(args.pokemonName),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF45dccc),
+              Color(0xFF2f8480),
+            ],
+          ),
+        ),
+        child: FutureBuilder(
+          future: Future.wait([
+            http.get(Uri.parse(
+                'https://pokeapi.co/api/v2/pokemon/${args.pokemonNumber}')),
+            http.get(Uri.parse(
+                'https://pokeapi.co/api/v2/pokemon-species/${args.pokemonNumber}')),
+          ]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              var pokemonData = jsonDecode((snapshot.data as List)[0].body);
+              var pokemonSpeciesData =
+                  jsonDecode((snapshot.data as List)[1].body);
+              var pokemonTypes = pokemonData['types']
+                  .map((typeData) => typeData['type']['name'])
+                  .toList();
+              var pokemonDescription = pokemonSpeciesData['flavor_text_entries']
+                      .firstWhere((entry) => entry['language']['name'] == 'en')[
+                  'flavor_text'];
+
+              return ListView(
+                children: [
+                  Stack(
+                    children: [
+                      SvgPicture.network(
+                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png', //COMO HAGO QUE FUNCIONE EL SVG NI PONIENDOLO LOCAL AGARRA ME QUIERO VOLVER CHANGO
+                        height: 100,
+                      ),
+                      Card(
+                        color: typeColors[pokemonTypes.first] ?? Colors.grey,
+                        child: Column(
+                          children: [
+                            Image.network(
+                                pokemonData['sprites']['front_default']),
+                            Text('Height: ${pokemonData['height']}'),
+                            Text('Weight: ${pokemonData['weight']}'),
+                            Text('Type: ${pokemonTypes.first}'),
+                            Text('Description: $pokemonDescription'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class PokemonSearchDelegate extends SearchDelegate {
   final List pokemonList;
 
@@ -229,3 +332,23 @@ class PokemonSearchDelegate extends SearchDelegate {
     );
   }
 }
+
+Map<String, Color> typeColors = {
+  'water': Color(0xFF4169E1), // RoyalBlue
+  'steel': Colors.grey,
+  'bug': Color(0xFF9ACD32), // YellowGreen
+  'dragon': Colors.indigo,
+  'electric': Colors.yellow,
+  'ghost': Colors.purple,
+  'fire': Colors.red,
+  'fairy': Colors.pink,
+  'ice': Colors.cyan,
+  'fighting': Colors.brown,
+  'normal': Colors.grey,
+  'grass': Colors.green,
+  'psychic': Colors.pink,
+  'rock': Colors.brown,
+  'dark': Colors.brown,
+  'ground': Colors.brown,
+  'poison': Colors.purple,
+};

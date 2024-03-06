@@ -1,0 +1,72 @@
+TIPO AGUA
+
+Color de fondo: RoyalBlue
+
+Color para bordes y celdas: MediumSlateBlue
+
+TIPO ACERO
+
+Color de fondo: LightGrey
+
+Color para bordes y celdas: Silver
+
+TIPO Bicho
+Color de fondo: YellowGreen
+
+Color para bordes y celdas: OliveDrab
+TIPO Dragón
+Color de fondo: MediumSlateBlue
+
+Color para bordes y celdas: SlateBlue
+TIPO Eléctrico
+Color de fondo: Yellow
+
+Color para bordes y celdas: Gold
+TIPO Fantasma
+Color de fondo: Purple
+
+Color para bordes y celdas: Indigo
+TIPO Fuego
+Color de fondo: Crimson
+
+Color para bordes y celdas: Firebrick
+TIPO Hada
+Color de fondo: rgb(255, 136, 238)
+
+Color para bordes y celdas: rgb(255, 187, 238)
+TIPO Hielo
+Color de fondo: AquaMarine
+
+Color para bordes y celdas: PaleTurquoise
+TIPO Lucha
+Color de fondo: Firebrick
+
+Color para bordes y celdas: Darkred
+TIPO Normal
+Color de fondo: Lavender
+
+Color para bordes y celdas: Gainsboro
+TIPO Planta
+Color de fondo: Lime
+
+Color para bordes y celdas: Limegreen
+TIPO Psíquico
+Color de fondo: Violet
+
+Color para bordes y celdas: Plum
+TIPO Roca
+Color de fondo: Peru
+
+Color para bordes y celdas: Chocolate
+TIPO Siniestro
+Color de fondo: SlateGray
+
+Color para bordes y celdas: Darkslategray
+TIPO Tierra
+Color de fondo: BurlyWood
+
+Color para bordes y celdas: Tan
+TIPO Veneno
+Color de fondo: Mediumpurple
+
+Color para bordes y celdas: Blueviolet
